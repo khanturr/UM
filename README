@@ -1,0 +1,111 @@
+UM
+
+Names: Hunter Purevbayar & Brandon Shih (hpurev01 & bshih01)
+
+What Works:
+
+segment.c/h, word.c/h, instruction.c/h, run.c/h, and um.c all work to the
+extent of our testing.
+ 
+What Doesn't Work:
+
+Everything seems to work to the extent of our testing.
+ 
+Design differences:
+
+We decided to create a new word.h module in order to take care of handling the
+words from the given input .um file. We also decided to change where some of 
+our parameters are declared within the Segment init(FILE *) and 
+void run(FILE *input) functions so that it would be easier to manage. Initially
+we were using a malloc'd array of words to store the list of words inside of 
+the segment. We decided to switch to using a Hanson UArray since it handled 
+some exceptions and also had methods inside that made implementation a lot 
+easier. This however, caused some issues in advent.umz so we decided to revert
+back to using our original structure using a struct defined segment and malloc
+the memory for the words manually.
+
+Architecture:
+
+Our universal machine consists of 4 modules with one main module. The modules 
+are segment, instruction, word, and run modules. We used a Hanson sequence 
+(Seq_T) of segments, which are malloc’d arrays of uint32_t word instructions 
+with a specified size. Segment 0 is always stored in the front of the Hanson 
+sequence which is where the program runs. The flow goes by first
+the um module calling the run module. The segment sequences and ids are 
+passed onto the respective instructions in the instructions module to execute 
+the user's opcodes while the word module is called during the register 
+initialization. When trying to map/unmap/load/store segments, 
+the segment module is called.
+
+
+Time:
+
+Our universal machine takes about 1.63 seconds to execute 50 million 
+instructions. We estimate this by timing how long it took to run
+midmark.um which has approximately 85 million instructions. It was
+able to finish that in 2.77 seconds. This means that it takes about
+1.63 seconds to execute 50 million instructions.
+
+UM tests: 
+
+map-unmap-store-load.um
+        This unit test tests the mapping, unmapping, loading and store
+        function all at the same time. First it tests to see if the segment
+        is mapped correctly. If it is, then the segment can be used to
+        store a word that contains a character. Then the loading function
+        can be used to retrieve the word. After that, the unmap function is
+        called to see if it is freed correctly, then the segment ID is recycled
+        to test the Stack of IDs. This is done by mapping a second time and
+        doing the same store and load process to see if the segment functions
+        properly. Then it all ends with the halt command.
+add.um
+       This unit test tests the um add command by putting values into
+       the register B and register C. Then adding B + C which returns a
+       uint32_t. This uint32_t is casted to a character and printed as an
+       ASCii 'b' if it runs correctly. 
+divide.um:
+        This unit test tests the um division command by putting values into
+        the register B and register C. Then dividing B / C which returns a
+        uint32_t. This uint32_t is casted to a character and printed as an
+        ASCii 'a' if it runs correctly.
+divide0.um:
+        This unit test tests the case for the divide by 0 error. This should
+        be caught be an assertion in the division command.
+multiply.um
+        This unit test tests the multiplication command by putting values into
+        the register B and register C. Then multiplying B * C which returns a
+        uint32_t. This uint32_t is casted to a character and printed as an
+        ASCii 'x' if it runs correctly.
+nand.um
+        This unit test tests the nand command by manipulating values using
+        arithmetic to ensure that the numbers are within the 0 to 255 range
+        of printable ASCii values. The value is not a letter, however there
+        is an exception that catches non ASCii characters, and this test did
+        not catch. This means that the character was successfully printed in
+        the range of 0 to 255.
+halt-verbose.um
+        This unit test tests the halt command with output and load. 
+        The functions load characters into registers, prints them out, 
+        and ends the program by halting.
+halt.um
+        This function tests the halt command by calling halt.
+input.um
+        This unit test tests the input command by inputting r3 and outputting.
+        Then loading the value in r1, outputting and halting. This should 
+        input r3 as planned.
+load-prog.um
+        This unit test tests the input command by calling loadprog after 
+        calling loadval in registers r1 and r3. T
+conditional-move.um
+        This unit test tests the programs ability to move register B to A
+        or not depending on the value of C. When C is 0, the expected output
+        is 'f' since 0 is the equivalent of false. When C is anything else,
+        such as 1 or 2, then the output is 't' indicating that a conditonal
+        move has happened.
+print-six.um
+        This unit test tests by loading, adding values and printing the
+        registers.
+
+Analyzation time: 3 hours
+Preparation time: 5 hours
+Solving time: 25 hours

@@ -1,0 +1,12 @@
+map-unmap-store-load.um
+add.um
+divide.um
+divide0.um
+multiply.um
+nand.um
+halt-verbose.um
+halt.um
+input.um
+load-prog.um
+conditional-move.um
+print-six.um
