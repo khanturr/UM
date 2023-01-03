@@ -1,0 +1,64 @@
+CS40 - HW 7 UM
+
+Names:
+        
+        Hunter Purevbayar & Brandon Shih (hpurev01 & bshih01)
+ 
+Acknowledgments: 
+        
+        Thank you to our TAs in Office Hours, CS Lecture.
+
+Explanations:
+
+        By running kcachegrind, of the functions that we made,
+        void push(uint32_t elem) and the uint32_t pop() functions from the 
+        stack.h module is called 1,410,045 times, 1,393,786 times respectively
+        for midmark.um. Since this function may require expansion and memory
+        references, we suspect that it is a bottle neck in the program. This
+        also makes sense because the stack is used to store the IDs, thus
+        whenever the map or unmap instruction takes place, the push or pop
+        function will be called. This is also indicative that the map and unmap
+        procedures take up a lot of time, but the function calls have been
+        removed for them for optimization purposes, so we chose to analyze
+        the stack functions instead. 
+        
+        void push(uint32_t elem):
+
+        mov (%rdi), %ebp
+        mov %rdi, %rbx
+        mov 0x4(%rdi), %edx
+        mov 0x8(%rdi), %r13
+        cmp %edx, %ebp
+        jae 401288 <push+0x38>
+        mov %r14d, 0x0(%r13, %rbp, 4)
+        mov %r13, 0x8(%rbx)
+
+        The assembly code for the push function only has one clear visible
+        optimization. By doing mov %r14d, 0x0(%r13, %rbp, 4), it is adding
+        0x0 to (%r13, %rbp, 4) to access the right memory address. By adding
+        0x0, the address does not change so it is unnecessary. Other than that,
+        the mov's don't load and store the same thing more than once, which
+        indicates that it is relatively efficient. The compare is only called
+        once which corresponds to the if statement for expansion.
+        
+        uint32_t pop():
+
+        mov (%rdi), %eax
+        mov 0x8(%rdi), %rdx
+        sub $0x1, %eax
+        mov %eax, (%rdi)
+        mov (%rdx, %rax, 4), %eax
+        retq
+
+        The assembly code for the pop function cannot be further optimized
+        since all registers are only loaded or stored each at most one time.
+        At least one move is required to compute anything. The assembly code
+        is reasonably short for a popping operation.
+
+Analyzation Time: 
+
+        5 hours
+
+Solving Time: 
+
+        25 hours
